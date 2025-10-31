@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -18,13 +18,9 @@ export default function AuthCallback() {
     }
 
     if (token) {
-      // Store the token in localStorage
       localStorage.setItem('token', token);
-      
-      // Redirect to the profile page (or wherever you want users to go after login)
       router.push('/profile');
     } else {
-      // No token found, redirect to login
       router.push('/login?error=no-token');
     }
   }, [router, searchParams]);
@@ -55,5 +51,22 @@ export default function AuthCallback() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh'
+      }}>
+        <p>Loading...</p>
+      </div>
+    }>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
